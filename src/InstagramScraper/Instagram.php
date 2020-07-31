@@ -40,6 +40,8 @@ class Instagram
     /** @var CacheInterface $instanceCache */
     private static $instanceCache = null;
 
+    private $customCookies = null;
+
     public $pagingTimeLimitSec         = self::PAGING_TIME_LIMIT_SEC;
     public $pagingDelayMinimumMicrosec = self::PAGING_DELAY_MINIMUM_MICROSEC;
     public $pagingDelayMaximumMicrosec = self::PAGING_DELAY_MAXIMUM_MICROSEC;
@@ -327,6 +329,10 @@ class Instagram
      */
     private function parseCookies($headers)
     {
+        if ($this->customCookies) {
+            return $this->getCustomCookies();
+        }
+
         $rawCookies = isset($headers['Set-Cookie']) ? $headers['Set-Cookie'] : (isset($headers['set-cookie']) ? $headers['set-cookie'] : []);
 
         if (!is_array($rawCookies)) {
@@ -1802,4 +1808,24 @@ class Instagram
 
         return self::extractSharedDataFromBody($response->raw_body);
     }
+
+    /**
+     *
+     * @return array
+     */
+    public function getCustomCookies()
+    {
+        return $this->customCookies;
+    }
+
+    /**
+     * @param $cookies
+     *
+     * @return array
+     */
+    public function setCustomCookies($cookies)
+    {
+        return $this->customCookies = $cookies;
+    }
+
 }
